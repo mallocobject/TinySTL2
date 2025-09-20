@@ -4,6 +4,7 @@
 #include <cstddef>
 #include <cstdlib>
 #include <iostream>
+#include <utility>
 
 namespace TS
 {
@@ -16,9 +17,26 @@ template <typename T> inline void construct(T *p)
     new (p) T();
 }
 
-template <typename T1, typename T2> inline void construct(T1 *p, const T2 &val)
+template <typename T, typename U> inline void construct(T *p, const U &val)
 {
-    new (p) T1(val);
+    new (p) T(val);
+}
+
+template <typename T, typename U> inline void construct(T *p, U &&val)
+{
+    new (p) T(std::forward<U>(val));
+}
+
+// // Specialization for std::initializer_list to avoid lifetime issues
+// template <typename T, typename U>
+// inline void construct(T *p, std::initializer_list<U> il)
+// {
+//     new (p) T(il);
+// }
+
+template <typename T, typename... Args> inline void construct(T *p, Args &&...args)
+{
+    new (p) T(std::forward<Args>(args)...);
 }
 
 template <typename T> inline void destroy(T *p)

@@ -68,7 +68,7 @@ inline ForwardIter uninitialized_copy_backward(InputIter first, InputIter last, 
         ForwardIter result_last = result + count;
         for (ForwardIter it = result; it != result_last; ++it)
         {
-            detroy(&*it);
+            destroy(&*it);
         }
         throw;
     }

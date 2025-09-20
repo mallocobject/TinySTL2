@@ -8,6 +8,7 @@
 #include <cstdint>
 #include <initializer_list>
 #include <stdexcept>
+#include <utility>
 
 namespace TS
 {
@@ -77,7 +78,7 @@ template <typename T, typename Alloc = malloc_alloc> class vector
         _finish = _start + count;
     }
 
-    vector(self &&other)
+    vector(self &&other) noexcept
         : _start(other._start), _finish(other._finish), _end_of_storage(other._end_of_storage)
     {
         other._start = nullptr;
@@ -95,6 +96,11 @@ template <typename T, typename Alloc = malloc_alloc> class vector
 
     vector &operator=(const self &other)
     {
+        if (&other == this)
+        {
+            return *this;
+        }
+
         size_type count = other.size();
         iterator first = other._start;
         iterator last = other._finish;
@@ -102,21 +108,24 @@ template <typename T, typename Alloc = malloc_alloc> class vector
         if (capacity() > count)
         {
             clear(_start, _start + count);
-            uninitialized_copy(first, last, _start);
         }
         else
         {
             zero_capacity();
             reserve(count);
-            uninitialized_copy(first, last, _start);
         }
-        _finish = _start + count;
+        _finish = uninitialized_copy(first, last, _start);
 
         return *this;
     }
 
-    vector &operator=(self &&other)
+    vector &operator=(self &&other) noexcept
     {
+        if (&other == this)
+        {
+            return *this;
+        }
+
         _start = other._start;
         _finish = other._finish;
         _end_of_storage = other._end_of_storage;
@@ -264,13 +273,12 @@ template <typename T, typename Alloc = malloc_alloc> class vector
             return;
         }
 
-        iterator first = begin();
+        iterator old_first = begin();
         size_type old_count = size();
         initialize(count);
-        uninitialized_copy_n(first, old_count, _start);
-        _finish = _start + old_count;
-        clear(first, first + old_count);
-        data_allocator::deallocate(first);
+        _finish = uninitialized_copy_n(old_first, old_count, _start);
+        clear(old_first, old_first + old_count);
+        data_allocator::deallocate(&*old_first);
     }
 
     void resize(size_type count)
@@ -300,7 +308,14 @@ template <typename T, typename Alloc = malloc_alloc> class vector
 
     void shrink_to_fit()
     {
-        reserve(size());
+        size_type count = size();
+
+        iterator old_first = begin();
+        size_type old_count = size();
+        initialize(count);
+        _finish = uninitialized_copy_n(old_first, old_count, _start);
+        clear(old_first, old_first + old_count);
+        data_allocator::deallocate(&*old_first);
     }
 
     // modifier
@@ -311,9 +326,109 @@ template <typename T, typename Alloc = malloc_alloc> class vector
         _finish = _start;
     }
 
-    iterator insert(const_pointer pos, const_reference val)
+    iterator insert(const_iterator pos, const_reference val)
     {
+        return insert<const_reference>(pos, val);
     }
+
+    template <typename U> iterator insert(const_iterator pos, U &&val)
+    {
+        if (pos < begin() || pos > end())
+        {
+            throw std::range_error("out of range");
+        }
+        difference_type index = pos - _start;
+        if (_finish == _end_of_storage)
+        {
+            iterator old_start = _start;
+            iterator old_finish = _finish;
+            expand();
+
+            iterator new_pos = _start + index;
+
+            // uninitialized_copy(old_start, old_finish, _start);
+            uninitialized_copy(old_start, const_cast<iterator>(pos), _start);
+            _finish = uninitialized_copy(const_cast<iterator>(pos), old_finish, new_pos + 1);
+            clear(old_start, old_finish);
+            data_allocator::deallocate(&*old_start);
+            construct(&*new_pos, std::forward<U>(val));
+        }
+        else
+        {
+            iterator non_const_pos = const_cast<iterator>(pos);
+            _finish = uninitialized_copy_backward(non_const_pos, _finish, non_const_pos + 1);
+            construct(&*non_const_pos, std::forward<U>(val));
+        }
+        return _start + index;
+    }
+
+    // iterator insert(const_iterator pos, std::initializer_list<T> init)
+    // {
+    //     if (pos < begin() || pos > end())
+    //     {
+    //         throw std::range_error("out of range");
+    //     }
+    //     difference_type index = pos - _start;
+    //     if (_finish + init.size() - 1 >= _end_of_storage)
+    //     {
+    //         iterator old_start = _start;
+    //         iterator old_finish = _finish;
+    //         initialize(size() + init.size());
+
+    //         iterator new_pos = _start + index;
+
+    //         // uninitialized_copy(old_start, old_finish, _start);
+    //         uninitialized_copy(old_start, const_cast<iterator>(pos), _start);
+    //         _finish =
+    //             uninitialized_copy(const_cast<iterator>(pos), old_finish, new_pos + init.size());
+    //         clear(old_start, old_finish);
+    //         uninitialized_copy(init.begin(), init.end(), new_pos);
+    //     }
+    //     else
+    //     {
+    //         iterator non_const_pos = const_cast<iterator>(pos);
+    //         _finish =
+    //             uninitialized_copy_backward(non_const_pos, _finish, non_const_pos + init.size());
+    //         uninitialized_copy(init.begin(), init.end(), non_const_pos);
+    //     }
+    //     return _start + index;
+    // }
+
+    template <typename... Args> iterator emplace(const_iterator pos, Args &&...args)
+    {
+        if (pos < begin() || pos > end())
+        {
+            throw std::range_error("out of range");
+        }
+        difference_type index = pos - _start;
+        if (_finish == _end_of_storage)
+        {
+            iterator old_start = _start;
+            iterator old_finish = _finish;
+            expand();
+
+            iterator new_pos = _start + index;
+
+            // uninitialized_copy(old_start, old_finish, _start);
+            uninitialized_copy(old_start, const_cast<iterator>(pos), _start);
+            _finish = uninitialized_copy(const_cast<iterator>(pos), old_finish, new_pos + 1);
+            clear(old_start, old_finish);
+            data_allocator::deallocate(&*old_start);
+            construct(&*new_pos, std::forward<Args>(args)...);
+        }
+        else
+        {
+            iterator non_const_pos = const_cast<iterator>(pos);
+            _finish = uninitialized_copy_backward(non_const_pos, _finish, non_const_pos + 1);
+            construct(&*non_const_pos, std::forward<Args>(args)...);
+        }
+        return _start + index;
+    }
+
+    // iterator emplace(const_iterator pos, std::initializer_list<T> init)
+    // {
+    //     return insert(pos, init);
+    // }
 
   protected:
     void initialize(size_type count)
