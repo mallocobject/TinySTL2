@@ -22,7 +22,7 @@ inline ForwardIter uninitialized_copy(InputIter first, InputIter last, ForwardIt
     {
         for (ForwardIter it = result; it != cur; ++it)
         {
-            destory(&*it);
+            destroy(&*it);
         }
         throw;
     }
@@ -44,7 +44,7 @@ inline ForwardIter uninitialized_copy_n(InputIter first, Size count, ForwardIter
     {
         for (ForwardIter it = result; it != cur; ++it)
         {
-            destory(&*it);
+            destroy(&*it);
         }
         throw;
     }
@@ -68,7 +68,7 @@ inline ForwardIter uninitialized_copy_backward(InputIter first, InputIter last, 
         ForwardIter result_last = result + count;
         for (ForwardIter it = result; it != result_last; ++it)
         {
-            destory(&*it);
+            detroy(&*it);
         }
         throw;
     }
@@ -91,7 +91,7 @@ inline ForwardIter uninitialized_copy_backward_n(InputIter first, Size count, Fo
         ForwardIter result_last = result + count;
         for (ForwardIter it = result; it != result_last; ++it)
         {
-            destory(&*it);
+            detroy(&*it);
         }
         throw;
     }
@@ -113,7 +113,7 @@ inline void uninitialized_fill(ForwardIter first, ForwardIter last, const T &val
     {
         for (ForwardIter it = first; it != last; ++it)
         {
-            destory(&*it);
+            detroy(&*it);
         }
         throw;
     }
@@ -134,7 +134,7 @@ inline void uninitialized_fill_n(ForwardIter first, Size count, const T &val)
     {
         for (ForwardIter it = first; it != last; ++it)
         {
-            destory(&*it);
+            destroy(&*it);
         }
     }
 }

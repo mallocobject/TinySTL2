@@ -31,6 +31,14 @@ template <typename T, typename Alloc = malloc_alloc> class vector
     using self = vector<T, Alloc>;
 
   public:
+    ~vector()
+    {
+        if (_start)
+        {
+            zero_capacity();
+        }
+    }
+
     vector() : _start(nullptr), _finish(nullptr), _end_of_storage(nullptr)
     {
         initialize(VECTOR_INIT_SIZE);
@@ -251,12 +259,17 @@ template <typename T, typename Alloc = malloc_alloc> class vector
         // {
         //     throw std::length_error("beyond the space allocated by system");
         // }
+        if (count <= capacity())
+        {
+            return;
+        }
 
         iterator first = begin();
         size_type old_count = size();
         initialize(count);
         uninitialized_copy_n(first, old_count, _start);
         _finish = _start + old_count;
+        clear(first, first + old_count);
         data_allocator::deallocate(first);
     }
 
@@ -279,7 +292,7 @@ template <typename T, typename Alloc = malloc_alloc> class vector
         {
             for (iterator cur = _start + count; cur != _finish; ++cur)
             {
-                destory(&*cur);
+                destroy(&*cur);
             }
             _finish = _start + count;
         }
@@ -335,7 +348,7 @@ template <typename T, typename Alloc = malloc_alloc> class vector
     {
         for (iterator cur = first; cur != last; ++cur)
         {
-            destory(&*cur);
+            destroy(&*cur);
         }
     }
 
