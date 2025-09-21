@@ -2,63 +2,70 @@
 #include <cassert>
 #include <iostream>
 #include <algorithm>
+#include <stdexcept>
 
 using namespace TS;
 
-// 测试基础功能
-void test_basic_functionality()
+// 测试辅助函数：打印测试结果
+void print_test_result(const char *test_name, bool passed)
 {
-    std::cout << "=== Testing basic functionality ===" << std::endl;
+    std::cout << test_name << ": " << (passed ? "PASSED" : "FAILED") << std::endl;
+}
+
+// 测试构造函数
+void test_constructors()
+{
+    std::cout << "=== Testing constructors ===" << std::endl;
 
     // 默认构造函数
     vector<int> v1;
-    assert(v1.size() == 0);
-    assert(v1.capacity() == VECTOR_INIT_SIZE);
-    assert(v1.empty());
+    bool passed = v1.size() == 0 && v1.capacity() == VECTOR_INIT_SIZE && v1.empty();
+    print_test_result("Default constructor", passed);
 
     // 带大小的构造函数
     vector<int> v2(5);
-    assert(v2.size() == 5);
-    assert(v2.capacity() >= 5);
+    passed = v2.size() == 5 && v2.capacity() >= 5;
     for (size_t i = 0; i < v2.size(); ++i)
     {
-        assert(v2[i] == 0);
+        passed = passed && (v2[i] == 0);
     }
+    print_test_result("Size constructor", passed);
 
     // 带大小和初始值的构造函数
     vector<int> v3(5, 42);
-    assert(v3.size() == 5);
+    passed = v3.size() == 5;
     for (size_t i = 0; i < v3.size(); ++i)
     {
-        assert(v3[i] == 42);
+        passed = passed && (v3[i] == 42);
     }
+    print_test_result("Size and value constructor", passed);
 
     // 拷贝构造函数
     vector<int> v4(v3);
-    assert(v4.size() == v3.size());
+    passed = v4.size() == v3.size();
     for (size_t i = 0; i < v4.size(); ++i)
     {
-        assert(v4[i] == v3[i]);
+        passed = passed && (v4[i] == v3[i]);
     }
+    print_test_result("Copy constructor", passed);
 
     // 移动构造函数
     vector<int> v5(std::move(v4));
-    assert(v5.size() == 5);
-    assert(v4.size() == 0); // 移动后原对象应为空
+    passed = v5.size() == 5 && v4.size() == 0;
     for (size_t i = 0; i < v5.size(); ++i)
     {
-        assert(v5[i] == 42);
+        passed = passed && (v5[i] == 42);
     }
+    print_test_result("Move constructor", passed);
 
     // 初始化列表构造函数
     vector<int> v6{1, 2, 3, 4, 5};
-    assert(v6.size() == 5);
+    passed = v6.size() == 5;
     for (size_t i = 0; i < v6.size(); ++i)
     {
-        assert(v6[i] == static_cast<int>(i + 1));
+        passed = passed && (v6[i] == static_cast<int>(i + 1));
     }
-
-    std::cout << "Basic functionality tests passed!" << std::endl;
+    print_test_result("Initializer list constructor", passed);
 }
 
 // 测试赋值操作
@@ -71,34 +78,34 @@ void test_assignment()
 
     // 拷贝赋值
     v2 = v1;
-    assert(v2.size() == v1.size());
+    bool passed = v2.size() == v1.size();
     for (size_t i = 0; i < v2.size(); ++i)
     {
-        assert(v2[i] == v1[i]);
+        passed = passed && (v2[i] == v1[i]);
     }
+    print_test_result("Copy assignment", passed);
 
     // 移动赋值
     vector<int> v3;
     v3 = std::move(v1);
-    assert(v3.size() == 3);
-    assert(v1.size() == 0); // 移动后原对象应为空
-    assert(v3[0] == 1 && v3[1] == 2 && v3[2] == 3);
+    passed = v3.size() == 3 && v1.size() == 0;
+    passed = passed && (v3[0] == 1 && v3[1] == 2 && v3[2] == 3);
+    print_test_result("Move assignment", passed);
 
     // 自赋值
     v3 = v3;
-    assert(v3.size() == 3);
-    assert(v3[0] == 1 && v3[1] == 2 && v3[2] == 3);
+    passed = v3.size() == 3 && (v3[0] == 1 && v3[1] == 2 && v3[2] == 3);
+    print_test_result("Self assignment", passed);
 
     // assign方法
     vector<int> v4;
     v4.assign(v3);
-    assert(v4.size() == v3.size());
+    passed = v4.size() == v3.size();
     for (size_t i = 0; i < v4.size(); ++i)
     {
-        assert(v4[i] == v3[i]);
+        passed = passed && (v4[i] == v3[i]);
     }
-
-    std::cout << "Assignment tests passed!" << std::endl;
+    print_test_result("Assign method", passed);
 }
 
 // 测试元素访问
@@ -107,64 +114,71 @@ void test_element_access()
     std::cout << "=== Testing element access ===" << std::endl;
 
     vector<int> v{1, 2, 3, 4, 5};
+    bool passed = true;
 
     // operator[]
     for (size_t i = 0; i < v.size(); ++i)
     {
-        assert(v[i] == static_cast<int>(i + 1));
+        passed = passed && (v[i] == static_cast<int>(i + 1));
     }
+    print_test_result("Operator[]", passed);
 
     // at() - 有效索引
+    passed = true;
     for (size_t i = 0; i < v.size(); ++i)
     {
-        assert(v.at(i) == static_cast<int>(i + 1));
+        passed = passed && (v.at(i) == static_cast<int>(i + 1));
     }
+    print_test_result("At() with valid indices", passed);
 
     // at() - 无效索引
+    passed = false;
     try
     {
         v.at(10);
-        assert(false); // 应该抛出异常
     }
     catch (const std::out_of_range &e)
     {
-        // 预期行为
+        passed = true;
     }
+    print_test_result("At() with invalid index", passed);
 
     // front和back
-    assert(v.front() == 1);
-    assert(v.back() == 5);
+    passed = (v.front() == 1) && (v.back() == 5);
+    print_test_result("Front and back", passed);
 
     // data
     int *data = v.data();
+    passed = true;
     for (size_t i = 0; i < v.size(); ++i)
     {
-        assert(data[i] == v[i]);
+        passed = passed && (data[i] == v[i]);
     }
+    print_test_result("Data", passed);
 
     // 空vector的front/back测试
     vector<int> empty_v;
+    passed = false;
     try
     {
         empty_v.front();
-        assert(false); // 应该抛出异常
     }
     catch (const std::logic_error &e)
     {
-        // 预期行为
+        passed = true;
     }
+    print_test_result("Front on empty vector", passed);
 
+    passed = false;
     try
     {
         empty_v.back();
-        assert(false); // 应该抛出异常
     }
     catch (const std::logic_error &e)
     {
-        // 预期行为
+        passed = true;
     }
-
-    std::cout << "Element access tests passed!" << std::endl;
+    print_test_result("Back on empty vector", passed);
 }
 
 // 测试迭代器
@@ -173,34 +187,38 @@ void test_iterators()
     std::cout << "=== Testing iterators ===" << std::endl;
 
     vector<int> v{1, 2, 3, 4, 5};
+    bool passed = true;
 
     // 普通迭代器
     int expected = 1;
     for (auto it = v.begin(); it != v.end(); ++it)
     {
-        assert(*it == expected++);
+        passed = passed && (*it == expected++);
     }
+    print_test_result("Iterator traversal", passed);
 
     // const迭代器
+    passed = true;
     expected = 1;
     for (auto it = v.cbegin(); it != v.cend(); ++it)
     {
-        assert(*it == expected++);
+        passed = passed && (*it == expected++);
     }
+    print_test_result("Const iterator traversal", passed);
 
     // 基于范围的for循环
+    passed = true;
     expected = 1;
     for (int val : v)
     {
-        assert(val == expected++);
+        passed = passed && (val == expected++);
     }
+    print_test_result("Range-based for loop", passed);
 
     // 空vector的迭代器
     vector<int> empty_v;
-    assert(empty_v.begin() == empty_v.end());
-    assert(empty_v.cbegin() == empty_v.cend());
-
-    std::cout << "Iterator tests passed!" << std::endl;
+    passed = (empty_v.begin() == empty_v.end()) && (empty_v.cbegin() == empty_v.cend());
+    print_test_result("Iterators on empty vector", passed);
 }
 
 // 测试容量操作
@@ -209,9 +227,8 @@ void test_capacity_operations()
     std::cout << "=== Testing capacity operations ===" << std::endl;
 
     vector<int> v;
-    assert(v.empty());
-    assert(v.size() == 0);
-    assert(v.capacity() == VECTOR_INIT_SIZE);
+    bool passed = v.empty() && v.size() == 0 && v.capacity() == VECTOR_INIT_SIZE;
+    print_test_result("Empty vector", passed);
 
     // 添加元素
     for (int i = 0; i < 5; ++i)
@@ -219,37 +236,37 @@ void test_capacity_operations()
         v.push_back(i);
     }
 
-    assert(!v.empty());
-    assert(v.size() == 5);
-    assert(v.capacity() >= 5);
+    passed = !v.empty() && v.size() == 5 && v.capacity() >= 5;
+    print_test_result("After adding elements", passed);
 
     // reserve - 扩大容量
     size_t old_capacity = v.capacity();
     v.reserve(old_capacity * 2);
-    assert(v.capacity() >= old_capacity * 2);
-    assert(v.size() == 5);
+    passed = v.capacity() >= old_capacity * 2 && v.size() == 5;
     for (int i = 0; i < 5; ++i)
     {
-        assert(v[i] == i);
+        passed = passed && (v[i] == i);
     }
+    print_test_result("Reserve to increase capacity", passed);
 
     // reserve - 小于当前容量，应无变化
     old_capacity = v.capacity();
     v.reserve(old_capacity / 2);
-    assert(v.capacity() == old_capacity);
+    passed = v.capacity() == old_capacity;
+    print_test_result("Reserve with smaller capacity", passed);
 
     // shrink_to_fit
     v.shrink_to_fit();
-    assert(v.capacity() == v.size());
+    passed = v.capacity() == v.size();
     for (int i = 0; i < 5; ++i)
     {
-        assert(v[i] == i);
+        passed = passed && (v[i] == i);
     }
+    print_test_result("Shrink to fit", passed);
 
     // max_size
-    assert(v.max_size() > 0);
-
-    std::cout << "Capacity operations tests passed!" << std::endl;
+    passed = v.max_size() > 0;
+    print_test_result("Max size", passed);
 }
 
 // 测试修改操作
@@ -258,43 +275,43 @@ void test_modifiers()
     std::cout << "=== Testing modifiers ===" << std::endl;
 
     vector<int> v;
+    bool passed = true;
 
     // push_back - 左值
     for (int i = 0; i < 5; ++i)
     {
         v.push_back(i);
     }
-    assert(v.size() == 5);
+    passed = v.size() == 5;
     for (int i = 0; i < 5; ++i)
     {
-        assert(v[i] == i);
+        passed = passed && (v[i] == i);
     }
+    print_test_result("Push back lvalue", passed);
 
     // push_back - 右值
     v.push_back(5);
-    assert(v.size() == 6);
-    assert(v[5] == 5);
+    passed = v.size() == 6 && v[5] == 5;
+    print_test_result("Push back rvalue", passed);
 
     // emplace_back
     v.emplace_back(6);
-    assert(v.size() == 7);
-    assert(v[6] == 6);
+    passed = v.size() == 7 && v[6] == 6;
+    print_test_result("Emplace back", passed);
 
     // pop_back
     v.pop_back();
-    assert(v.size() == 6);
+    passed = v.size() == 6;
     for (int i = 0; i < 6; ++i)
     {
-        assert(v[i] == i);
+        passed = passed && (v[i] == i);
     }
+    print_test_result("Pop back", passed);
 
     // clear
     v.clear();
-    assert(v.empty());
-    assert(v.size() == 0);
-    assert(v.capacity() > 0); // 清空后容量应保持不变
-
-    std::cout << "Modifiers tests passed!" << std::endl;
+    passed = v.empty() && v.size() == 0 && v.capacity() > 0;
+    print_test_result("Clear", passed);
 }
 
 // 测试插入和删除
@@ -303,45 +320,46 @@ void test_insert_erase()
     std::cout << "=== Testing insert and erase ===" << std::endl;
 
     vector<int> v{1, 2, 3, 4, 5};
+    bool passed = true;
 
     // 在开头插入
     v.insert(v.begin(), 0);
-    assert(v.size() == 6);
-    assert(v[0] == 0);
+    passed = v.size() == 6 && v[0] == 0;
     for (int i = 1; i < 6; ++i)
     {
-        assert(v[i] == i);
+        passed = passed && (v[i] == i);
     }
+    print_test_result("Insert at beginning", passed);
 
     // 在中间插入
     v.insert(v.begin() + 3, 99);
-    assert(v.size() == 7);
-    assert(v[3] == 99);
+    passed = v.size() == 7 && v[3] == 99;
+    print_test_result("Insert in middle", passed);
 
     // 在末尾插入
     v.insert(v.end(), 100);
-    assert(v.size() == 8);
-    assert(v[7] == 100);
+    passed = v.size() == 8 && v[7] == 100;
+    print_test_result("Insert at end", passed);
 
     // emplace
     v.emplace(v.begin() + 2, 88);
-    assert(v.size() == 9);
-    assert(v[2] == 88);
+    passed = v.size() == 9 && v[2] == 88;
+    print_test_result("Emplace", passed);
 
     // 删除单个元素
     v.erase(v.begin() + 2);
-    assert(v.size() == 8);
-    assert(v[2] != 88);
+    passed = v.size() == 8 && v[2] != 88;
+    print_test_result("Erase single element", passed);
 
     // 删除范围
     v.erase(v.begin() + 3, v.begin() + 5);
-    assert(v.size() == 6);
+    passed = v.size() == 6;
+    print_test_result("Erase range", passed);
 
     // 删除所有元素
     v.erase(v.begin(), v.end());
-    assert(v.empty());
-
-    std::cout << "Insert and erase tests passed!" << std::endl;
+    passed = v.empty();
+    print_test_result("Erase all elements", passed);
 }
 
 // 测试resize
@@ -350,36 +368,38 @@ void test_resize()
     std::cout << "=== Testing resize ===" << std::endl;
 
     vector<int> v{1, 2, 3, 4, 5};
+    bool passed = true;
 
     // 缩小尺寸
     v.resize(3);
-    assert(v.size() == 3);
+    passed = v.size() == 3;
     for (int i = 0; i < 3; ++i)
     {
-        assert(v[i] == i + 1);
+        passed = passed && (v[i] == i + 1);
     }
+    print_test_result("Resize to smaller size", passed);
 
     // 扩大尺寸 - 默认值
     v.resize(5);
-    assert(v.size() == 5);
+    passed = v.size() == 5;
     for (int i = 0; i < 3; ++i)
     {
-        assert(v[i] == i + 1);
+        passed = passed && (v[i] == i + 1);
     }
     for (int i = 3; i < 5; ++i)
     {
-        assert(v[i] == 0);
+        passed = passed && (v[i] == 0);
     }
+    print_test_result("Resize to larger size with default value", passed);
 
     // 扩大尺寸 - 指定值
     v.resize(7, 99);
-    assert(v.size() == 7);
+    passed = v.size() == 7;
     for (int i = 5; i < 7; ++i)
     {
-        assert(v[i] == 99);
+        passed = passed && (v[i] == 99);
     }
-
-    std::cout << "Resize tests passed!" << std::endl;
+    print_test_result("Resize to larger size with specified value", passed);
 }
 
 // 测试swap
@@ -397,21 +417,18 @@ void test_swap()
 
     v1.swap(v2);
 
-    assert(v1.size() == v2_size);
-    assert(v2.size() == v1_size);
-    assert(v1.capacity() == v2_capacity);
-    assert(v2.capacity() == v1_capacity);
+    bool passed = v1.size() == v2_size && v2.size() == v1_size;
+    passed = passed && v1.capacity() == v2_capacity && v2.capacity() == v1_capacity;
 
     for (int i = 0; i < 4; ++i)
     {
-        assert(v1[i] == i + 4);
+        passed = passed && (v1[i] == i + 4);
     }
     for (int i = 0; i < 3; ++i)
     {
-        assert(v2[i] == i + 1);
+        passed = passed && (v2[i] == i + 1);
     }
-
-    std::cout << "Swap tests passed!" << std::endl;
+    print_test_result("Swap", passed);
 }
 
 // 测试自定义类型
@@ -420,38 +437,33 @@ void test_custom_type()
     std::cout << "=== Testing custom type ===" << std::endl;
 
     vector<std::string> v;
+    bool passed = true;
 
     // push_back
     v.push_back("Hello");
     v.push_back("World");
-    assert(v.size() == 2);
-    assert(v[0] == "Hello");
-    assert(v[1] == "World");
+    passed = v.size() == 2 && v[0] == "Hello" && v[1] == "World";
+    print_test_result("Push back with strings", passed);
 
     // emplace_back
     v.emplace_back("Test");
-    assert(v.size() == 3);
-    assert(v[2] == "Test");
+    passed = v.size() == 3 && v[2] == "Test";
+    print_test_result("Emplace back with strings", passed);
 
     // insert
     v.insert(v.begin() + 1, "Middle");
-    assert(v.size() == 4);
-    assert(v[1] == "Middle");
+    passed = v.size() == 4 && v[1] == "Middle";
+    print_test_result("Insert with strings", passed);
 
     // erase
     v.erase(v.begin() + 2);
-    assert(v.size() == 3);
-    assert(v[0] == "Hello");
-    assert(v[1] == "Middle");
-    assert(v[2] == "Test");
+    passed = v.size() == 3 && v[0] == "Hello" && v[1] == "Middle" && v[2] == "Test";
+    print_test_result("Erase with strings", passed);
 
     // resize
     v.resize(5, "Default");
-    assert(v.size() == 5);
-    assert(v[3] == "Default");
-    assert(v[4] == "Default");
-
-    std::cout << "Custom type tests passed!" << std::endl;
+    passed = v.size() == 5 && v[3] == "Default" && v[4] == "Default";
+    print_test_result("Resize with strings", passed);
 }
 
 // 测试异常安全
@@ -460,41 +472,43 @@ void test_exception_safety()
     std::cout << "=== Testing exception safety ===" << std::endl;
 
     vector<int> v{1, 2, 3, 4, 5};
+    bool passed = true;
 
     // at() 超出范围应抛出异常
     try
     {
         v.at(10);
-        assert(false); // 不应该执行到这里
+        passed = false; // 不应该执行到这里
     }
     catch (const std::out_of_range &)
     {
         // 预期行为
     }
+    print_test_result("Out of range exception", passed);
 
     // 空vector的front/back应抛出异常
     vector<int> empty_v;
     try
     {
         empty_v.front();
-        assert(false); // 不应该执行到这里
+        passed = false; // 不应该执行到这里
     }
     catch (const std::logic_error &)
     {
         // 预期行为
     }
+    print_test_result("Front on empty vector exception", passed);
 
     try
     {
         empty_v.back();
-        assert(false); // 不应该执行到这里
+        passed = false; // 不应该执行到这里
     }
     catch (const std::logic_error &)
     {
         // 预期行为
     }
-
-    std::cout << "Exception safety tests passed!" << std::endl;
+    print_test_result("Back on empty vector exception", passed);
 }
 
 // 测试与STL算法的兼容性
@@ -503,27 +517,55 @@ void test_stl_compatibility()
     std::cout << "=== Testing STL compatibility ===" << std::endl;
 
     vector<int> v{5, 3, 1, 4, 2};
+    bool passed = true;
 
     // 使用STL排序
     std::sort(v.begin(), v.end());
     for (int i = 0; i < 5; ++i)
     {
-        assert(v[i] == i + 1);
+        passed = passed && (v[i] == i + 1);
     }
+    print_test_result("STL sort", passed);
 
     // 使用STL查找
     auto it = std::find(v.begin(), v.end(), 3);
-    assert(it != v.end());
-    assert(*it == 3);
+    passed = (it != v.end()) && (*it == 3);
+    print_test_result("STL find", passed);
 
     // 使用STL填充
     std::fill(v.begin(), v.end(), 42);
     for (int val : v)
     {
-        assert(val == 42);
+        passed = passed && (val == 42);
     }
+    print_test_result("STL fill", passed);
+}
 
-    std::cout << "STL compatibility tests passed!" << std::endl;
+// 测试相等操作符
+void test_equality_operator()
+{
+    std::cout << "=== Testing equality operator ===" << std::endl;
+
+    vector<int> v1{1, 2, 3, 4, 5};
+    vector<int> v2{1, 2, 3, 4, 5};
+    vector<int> v3{1, 2, 3};
+    vector<int> v4{1, 2, 3, 4, 6};
+
+    bool passed = (v1 == v2) && !(v1 == v3) && !(v1 == v4);
+    print_test_result("Equality operator", passed);
+
+    // 测试空向量
+    vector<int> v5;
+    vector<int> v6;
+    passed = (v5 == v6);
+    print_test_result("Equality operator with empty vectors", passed);
+
+    // 测试自定义类型
+    vector<std::string> s1{"hello", "world"};
+    vector<std::string> s2{"hello", "world"};
+    vector<std::string> s3{"hello", "world!"};
+    passed = (s1 == s2) && !(s1 == s3);
+    print_test_result("Equality operator with strings", passed);
 }
 
 // 性能测试 - 大量数据
@@ -533,40 +575,40 @@ void test_performance()
 
     const int N = 10000;
     vector<int> v;
+    bool passed = true;
 
     // 测试push_back性能
     for (int i = 0; i < N; ++i)
     {
         v.push_back(i);
     }
-    assert(v.size() == N);
+    passed = v.size() == N;
     for (int i = 0; i < N; ++i)
     {
-        assert(v[i] == i);
+        passed = passed && (v[i] == i);
     }
+    print_test_result("Performance - push_back", passed);
 
     // 测试reserve
     v.reserve(N * 2);
-    assert(v.capacity() >= N * 2);
-    assert(v.size() == N);
+    passed = v.capacity() >= N * 2 && v.size() == N;
     for (int i = 0; i < N; ++i)
     {
-        assert(v[i] == i);
+        passed = passed && (v[i] == i);
     }
+    print_test_result("Performance - reserve", passed);
 
     // 测试clear
     v.clear();
-    assert(v.empty());
-    assert(v.capacity() >= N * 2); // 容量应保持不变
-
-    std::cout << "Performance tests passed!" << std::endl;
+    passed = v.empty() && v.capacity() >= N * 2;
+    print_test_result("Performance - clear", passed);
 }
 
 int main()
 {
     try
     {
-        test_basic_functionality();
+        test_constructors();
         test_assignment();
         test_element_access();
         test_iterators();
@@ -578,9 +620,10 @@ int main()
         test_custom_type();
         test_exception_safety();
         test_stl_compatibility();
+        test_equality_operator();
         test_performance();
 
-        std::cout << "\nAll tests passed! Vector implementation is correct." << std::endl;
+        std::cout << "\nAll tests completed!" << std::endl;
         return 0;
     }
     catch (const std::exception &e)

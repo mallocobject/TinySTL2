@@ -15,6 +15,10 @@ namespace TS
 {
 const std::size_t VECTOR_INIT_SIZE = 10;
 
+template <typename T, typename Alloc> class vector;
+
+template <typename T, typename Alloc> bool operator==(const vector<T, Alloc> &lhs, const vector<T, Alloc> &rhs);
+
 template <typename T, typename Alloc = malloc_alloc> class vector
 {
   public:
@@ -521,7 +525,7 @@ template <typename T, typename Alloc = malloc_alloc> class vector
         }
     }
 
-    void swap(self &other)
+    void swap(self &other) noexcept
     {
         if (this == &other)
         {
@@ -577,11 +581,32 @@ template <typename T, typename Alloc = malloc_alloc> class vector
         }
     }
 
+    // non-member function(s)
+    friend bool operator== <T, Alloc>(const vector<T, Alloc> &lhs, const vector<T, Alloc> &rhs);
+
   protected:
     iterator _start;
     iterator _finish;
     iterator _end_of_storage;
 };
+
+template <typename T, typename Alloc> bool operator==(const vector<T, Alloc> &lhs, const vector<T, Alloc> &rhs)
+{
+    if (lhs.size() != rhs.size())
+    {
+        return false;
+    }
+
+    for (typename vector<T, Alloc>::size_type i = 0; i < lhs.size(); ++i)
+    {
+        if (*(lhs.begin() + i) != *(rhs.begin() + i))
+        {
+            return false;
+        }
+    }
+    return true;
+}
+
 } // namespace TS
 
 #endif
