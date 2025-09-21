@@ -57,10 +57,10 @@ RM = /usr/bin/cmake -E rm -f
 EQUALS = =
 
 # The top-level source directory on which CMake was run.
-CMAKE_SOURCE_DIR = /home/danking/src/code/TinySTL2
+CMAKE_SOURCE_DIR = /home/danking/Desktop/TinySTL2
 
 # The top-level build directory on which CMake was run.
-CMAKE_BINARY_DIR = /home/danking/src/code/TinySTL2/build
+CMAKE_BINARY_DIR = /home/danking/Desktop/TinySTL2/build
 
 #=============================================================================
 # Targets provided globally by CMake.
@@ -87,9 +87,9 @@ rebuild_cache/fast: rebuild_cache
 
 # The main all target
 all: cmake_check_build_system
-	$(CMAKE_COMMAND) -E cmake_progress_start /home/danking/src/code/TinySTL2/build/CMakeFiles /home/danking/src/code/TinySTL2/build//CMakeFiles/progress.marks
+	$(CMAKE_COMMAND) -E cmake_progress_start /home/danking/Desktop/TinySTL2/build/CMakeFiles /home/danking/Desktop/TinySTL2/build//CMakeFiles/progress.marks
 	$(MAKE) $(MAKESILENT) -f CMakeFiles/Makefile2 all
-	$(CMAKE_COMMAND) -E cmake_progress_start /home/danking/src/code/TinySTL2/build/CMakeFiles 0
+	$(CMAKE_COMMAND) -E cmake_progress_start /home/danking/Desktop/TinySTL2/build/CMakeFiles 0
 .PHONY : all
 
 # The main clean target
@@ -129,29 +129,29 @@ TinySTL/fast:
 	$(MAKE) $(MAKESILENT) -f CMakeFiles/TinySTL.dir/build.make CMakeFiles/TinySTL.dir/build
 .PHONY : TinySTL/fast
 
-Test/test.o: Test/test.cpp.o
-.PHONY : Test/test.o
+Test/array_test.o: Test/array_test.cpp.o
+.PHONY : Test/array_test.o
 
 # target to build an object file
-Test/test.cpp.o:
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/TinySTL.dir/build.make CMakeFiles/TinySTL.dir/Test/test.cpp.o
-.PHONY : Test/test.cpp.o
+Test/array_test.cpp.o:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/TinySTL.dir/build.make CMakeFiles/TinySTL.dir/Test/array_test.cpp.o
+.PHONY : Test/array_test.cpp.o
 
-Test/test.i: Test/test.cpp.i
-.PHONY : Test/test.i
+Test/array_test.i: Test/array_test.cpp.i
+.PHONY : Test/array_test.i
 
 # target to preprocess a source file
-Test/test.cpp.i:
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/TinySTL.dir/build.make CMakeFiles/TinySTL.dir/Test/test.cpp.i
-.PHONY : Test/test.cpp.i
+Test/array_test.cpp.i:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/TinySTL.dir/build.make CMakeFiles/TinySTL.dir/Test/array_test.cpp.i
+.PHONY : Test/array_test.cpp.i
 
-Test/test.s: Test/test.cpp.s
-.PHONY : Test/test.s
+Test/array_test.s: Test/array_test.cpp.s
+.PHONY : Test/array_test.s
 
 # target to generate assembly for a file
-Test/test.cpp.s:
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/TinySTL.dir/build.make CMakeFiles/TinySTL.dir/Test/test.cpp.s
-.PHONY : Test/test.cpp.s
+Test/array_test.cpp.s:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/TinySTL.dir/build.make CMakeFiles/TinySTL.dir/Test/array_test.cpp.s
+.PHONY : Test/array_test.cpp.s
 
 # Help Target
 help:
@@ -162,9 +162,9 @@ help:
 	@echo "... edit_cache"
 	@echo "... rebuild_cache"
 	@echo "... TinySTL"
-	@echo "... Test/test.o"
-	@echo "... Test/test.i"
-	@echo "... Test/test.s"
+	@echo "... Test/array_test.o"
+	@echo "... Test/array_test.i"
+	@echo "... Test/array_test.s"
 .PHONY : help
 
 

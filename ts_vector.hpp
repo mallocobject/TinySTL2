@@ -7,7 +7,6 @@
 #include <cstddef>
 #include <cstdint>
 #include <initializer_list>
-#include <iostream>
 #include <stdexcept>
 #include <utility>
 
@@ -17,7 +16,8 @@ const std::size_t VECTOR_INIT_SIZE = 10;
 
 template <typename T, typename Alloc> class vector;
 
-template <typename T, typename Alloc> bool operator==(const vector<T, Alloc> &lhs, const vector<T, Alloc> &rhs);
+template <typename T, typename Alloc>
+bool operator==(const vector<T, Alloc> &lhs, const vector<T, Alloc> &rhs);
 
 template <typename T, typename Alloc = malloc_alloc> class vector
 {
@@ -50,12 +50,12 @@ template <typename T, typename Alloc = malloc_alloc> class vector
         initialize(VECTOR_INIT_SIZE);
     }
 
-    vector(size_type count) : vector()
+    vector(size_type count)
     {
         fill_initialize(count, T());
     }
 
-    vector(size_type count, const T &val) : vector()
+    vector(size_type count, const T &val)
     {
         fill_initialize(count, val);
     }
@@ -70,7 +70,7 @@ template <typename T, typename Alloc = malloc_alloc> class vector
     //     }
     // }
 
-    vector(const self &other) : vector()
+    vector(const self &other)
     {
         size_type count = other.size();
         initialize(count);
@@ -83,14 +83,15 @@ template <typename T, typename Alloc = malloc_alloc> class vector
         _finish = _start + count;
     }
 
-    vector(self &&other) noexcept : _start(other._start), _finish(other._finish), _end_of_storage(other._end_of_storage)
+    vector(self &&other) noexcept
+        : _start(other._start), _finish(other._finish), _end_of_storage(other._end_of_storage)
     {
         other._start = nullptr;
         other._finish = nullptr;
         other._end_of_storage = nullptr;
     }
 
-    vector(std::initializer_list<T> init) : vector()
+    vector(std::initializer_list<T> init)
     {
         size_type count = init.size();
         initialize(count);
@@ -590,7 +591,8 @@ template <typename T, typename Alloc = malloc_alloc> class vector
     iterator _end_of_storage;
 };
 
-template <typename T, typename Alloc> bool operator==(const vector<T, Alloc> &lhs, const vector<T, Alloc> &rhs)
+template <typename T, typename Alloc>
+bool operator==(const vector<T, Alloc> &lhs, const vector<T, Alloc> &rhs)
 {
     if (lhs.size() != rhs.size())
     {

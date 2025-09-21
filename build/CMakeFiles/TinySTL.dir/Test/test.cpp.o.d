@@ -1,7 +1,8 @@
 CMakeFiles/TinySTL.dir/Test/test.cpp.o: \
- /home/danking/src/code/TinySTL2/Test/test.cpp /usr/include/stdc-predef.h \
- /home/danking/src/code/TinySTL2/Test/../ts_vector.hpp \
- /home/danking/src/code/TinySTL2/Test/../ts_alloc.hpp \
+ /home/danking/Desktop/TinySTL2/Test/test.cpp /usr/include/stdc-predef.h \
+ /home/danking/Desktop/TinySTL2/Test/../ts_array.hpp \
+ /home/danking/Desktop/TinySTL2/Test/../ts_uninitialized.hpp \
+ /home/danking/Desktop/TinySTL2/Test/../ts_alloc.hpp \
  /usr/include/c++/13/cstddef \
  /usr/include/x86_64-linux-gnu/c++/13/bits/c++config.h \
  /usr/include/x86_64-linux-gnu/c++/13/bits/os_defines.h \
@@ -154,17 +155,12 @@ CMakeFiles/TinySTL.dir/Test/test.cpp.o: \
  /usr/include/c++/13/bits/basic_ios.tcc \
  /usr/include/c++/13/bits/ostream.tcc /usr/include/c++/13/istream \
  /usr/include/c++/13/bits/istream.tcc /usr/include/c++/13/utility \
- /usr/include/c++/13/bits/stl_relops.h \
- /home/danking/src/code/TinySTL2/Test/../ts_uninitialized.hpp \
- /usr/include/c++/13/cassert /usr/include/assert.h \
- /usr/include/c++/13/cstdint \
- /usr/lib/gcc/x86_64-linux-gnu/13/include/stdint.h /usr/include/stdint.h \
- /usr/include/x86_64-linux-gnu/bits/stdint-uintn.h \
- /usr/include/x86_64-linux-gnu/bits/stdint-least.h \
- /usr/include/c++/13/algorithm /usr/include/c++/13/bits/stl_algo.h \
+ /usr/include/c++/13/bits/stl_relops.h /usr/include/c++/13/algorithm \
+ /usr/include/c++/13/bits/stl_algo.h \
  /usr/include/c++/13/bits/algorithmfwd.h \
  /usr/include/c++/13/bits/stl_heap.h \
  /usr/include/c++/13/bits/uniform_int_dist.h \
  /usr/include/c++/13/bits/stl_tempbuf.h \
  /usr/include/c++/13/pstl/glue_algorithm_defs.h \
- /usr/include/c++/13/pstl/execution_defs.h
+ /usr/include/c++/13/pstl/execution_defs.h /usr/include/c++/13/cassert \
+ /usr/include/assert.h
