@@ -8,8 +8,8 @@
 
 namespace TS
 {
-#define THROW_BAD_ALLOC                                                                            \
-    std::cout << "out of memory" << std::endl;                                                     \
+#define THROW_BAD_ALLOC                                                                                                \
+    std::cout << "out of memory" << std::endl;                                                                         \
     throw std::bad_alloc()
 
 template <typename T> inline void construct(T *p)
@@ -26,6 +26,18 @@ template <typename T, typename U> inline void construct(T *p, U &&val)
 {
     new (p) T(std::forward<U>(val));
 }
+
+// template <typename T, typename U> inline void reconstruct(T *p, const U &val)
+// {
+//     p->~T();
+//     new (p) T(val);
+// }
+
+// template <typename T, typename U> inline void reconstruct(T *p, U &&val)
+// {
+//     p->~T();
+//     new (p) T(std::forward<U>(val));
+// }
 
 // // Specialization for std::initializer_list to avoid lifetime issues
 // template <typename T, typename U>

@@ -7,6 +7,7 @@
 #include <cstddef>
 #include <cstdint>
 #include <initializer_list>
+#include <iostream>
 #include <stdexcept>
 #include <utility>
 
@@ -78,8 +79,7 @@ template <typename T, typename Alloc = malloc_alloc> class vector
         _finish = _start + count;
     }
 
-    vector(self &&other) noexcept
-        : _start(other._start), _finish(other._finish), _end_of_storage(other._end_of_storage)
+    vector(self &&other) noexcept : _start(other._start), _finish(other._finish), _end_of_storage(other._end_of_storage)
     {
         other._start = nullptr;
         other._finish = nullptr;
@@ -281,31 +281,6 @@ template <typename T, typename Alloc = malloc_alloc> class vector
         data_allocator::deallocate(&*old_first);
     }
 
-    void resize(size_type count)
-    {
-        assert(count >= 0 && count < max_size());
-        if (count > capacity())
-        {
-            reserve(count);
-        }
-        else if (count > size())
-        {
-            for (iterator cur = _finish; cur != _start + count; ++cur)
-            {
-                construct(&*cur);
-            }
-            _finish = _start + count;
-        }
-        else
-        {
-            for (iterator cur = _start + count; cur != _finish; ++cur)
-            {
-                destroy(&*cur);
-            }
-            _finish = _start + count;
-        }
-    }
-
     void shrink_to_fit()
     {
         size_type count = size();
@@ -328,38 +303,41 @@ template <typename T, typename Alloc = malloc_alloc> class vector
 
     iterator insert(const_iterator pos, const_reference val)
     {
-        return insert<const_reference>(pos, val);
+        // return insert<const_reference>(pos, val);
+        return emplace(pos, val);
     }
 
-    template <typename U> iterator insert(const_iterator pos, U &&val)
+    iterator insert(const_iterator pos, T &&val)
     {
-        if (pos < begin() || pos > end())
-        {
-            throw std::range_error("out of range");
-        }
-        difference_type index = pos - _start;
-        if (_finish == _end_of_storage)
-        {
-            iterator old_start = _start;
-            iterator old_finish = _finish;
-            expand();
+        // if (pos < begin() || pos > end())
+        // {
+        //     throw std::range_error("out of range");
+        // }
+        // difference_type index = pos - _start;
+        // if (_finish == _end_of_storage)
+        // {
+        //     iterator old_start = _start;
+        //     iterator old_finish = _finish;
+        //     expand();
 
-            iterator new_pos = _start + index;
+        //     iterator new_pos = _start + index;
 
-            // uninitialized_copy(old_start, old_finish, _start);
-            uninitialized_copy(old_start, const_cast<iterator>(pos), _start);
-            _finish = uninitialized_copy(const_cast<iterator>(pos), old_finish, new_pos + 1);
-            clear(old_start, old_finish);
-            data_allocator::deallocate(&*old_start);
-            construct(&*new_pos, std::forward<U>(val));
-        }
-        else
-        {
-            iterator non_const_pos = const_cast<iterator>(pos);
-            _finish = uninitialized_copy_backward(non_const_pos, _finish, non_const_pos + 1);
-            construct(&*non_const_pos, std::forward<U>(val));
-        }
-        return _start + index;
+        //     // uninitialized_copy(old_start, old_finish, _start);
+        //     uninitialized_copy(old_start, const_cast<iterator>(pos), _start);
+        //     _finish = uninitialized_copy(const_cast<iterator>(pos), old_finish, new_pos + 1);
+        //     clear(old_start, old_finish);
+        //     data_allocator::deallocate(&*old_start);
+        //     construct(&*new_pos, std::forward<U>(val));
+        // }
+        // else
+        // {
+        //     iterator non_const_pos = const_cast<iterator>(pos);
+        //     _finish = uninitialized_copy_backward(non_const_pos, _finish, non_const_pos + 1);
+        //     construct(&*non_const_pos, std::forward<U>(val));
+        // }
+        // return _start + index;
+
+        return emplace(pos, std::move(val));
     }
 
     // iterator insert(const_iterator pos, std::initializer_list<T> init)
@@ -425,10 +403,142 @@ template <typename T, typename Alloc = malloc_alloc> class vector
         return _start + index;
     }
 
-    // iterator emplace(const_iterator pos, std::initializer_list<T> init)
-    // {
-    //     return insert(pos, init);
-    // }
+    iterator erase(iterator pos)
+    {
+        return erase((const_iterator)pos);
+    }
+
+    iterator erase(const_iterator pos)
+    {
+        // if (pos < begin() || pos > end())
+        // {
+        //     throw std::range_error("out of range");
+        // }
+
+        // iterator non_const_pos = const_cast<iterator>(pos);
+
+        // _finish = uninitialized_copy(non_const_pos + 1, _finish, non_const_pos);
+        // destroy(&*_finish);
+        // return non_const_pos;
+        return erase(pos, pos + 1);
+    }
+
+    iterator erase(iterator first, iterator last)
+    {
+        return erase((const_iterator)first, (const_iterator)last);
+    }
+
+    iterator erase(const_iterator first, const_iterator last)
+    {
+        if (first == last)
+        {
+            return const_cast<iterator>(last);
+        }
+
+        if (first > last || first < begin() || last > end())
+        {
+            throw std::range_error("out of range");
+        }
+
+        iterator non_const_first = const_cast<iterator>(first);
+        iterator non_const_last = const_cast<iterator>(last);
+        iterator old_finish = _finish;
+
+        _finish = uninitialized_copy(non_const_last, _finish, non_const_first);
+        clear(_finish, old_finish);
+        return non_const_first;
+    }
+
+    void push_back(const_reference val)
+    {
+        emplace(_finish, val);
+    }
+
+    void push_back(T &&val)
+    {
+        emplace(_finish, std::move(val));
+    }
+
+    template <typename... Args> void emplace_back(Args &&...args)
+    {
+        emplace(_finish, std::forward<Args>(args)...);
+    }
+
+    void pop_back()
+    {
+        erase(_finish - 1);
+    }
+
+    void resize(size_type count)
+    {
+        assert(count >= 0 && count < max_size());
+        if (count > capacity())
+        {
+            reserve(count);
+        }
+
+        if (count > size())
+        {
+            for (iterator cur = _finish; cur != _start + count; ++cur)
+            {
+                construct(&*cur);
+            }
+            _finish = _start + count;
+        }
+        else
+        {
+            for (iterator cur = _start + count; cur != _finish; ++cur)
+            {
+                destroy(&*cur);
+            }
+            _finish = _start + count;
+        }
+    }
+
+    void resize(size_type count, const value_type &val)
+    {
+        assert(count >= 0 && count < max_size());
+        if (count > capacity())
+        {
+            reserve(count);
+        }
+
+        if (count > size())
+        {
+            for (iterator cur = _finish; cur != _start + count; ++cur)
+            {
+                construct(&*cur, val);
+            }
+            _finish = _start + count;
+        }
+        else
+        {
+            for (iterator cur = _start + count; cur != _finish; ++cur)
+            {
+                destroy(&*cur);
+            }
+            _finish = _start + count;
+        }
+    }
+
+    void swap(self &other)
+    {
+        if (this == &other)
+        {
+            return;
+        }
+        iterator tmp_start = other._start;
+        iterator tmp_finish = other._finish;
+        iterator tmp_end_of_storage = other._end_of_storage;
+
+        other._start = _start;
+        other._finish = _finish;
+        other._end_of_storage = _end_of_storage;
+
+        _start = tmp_start;
+        _finish = tmp_finish;
+        _end_of_storage = tmp_end_of_storage;
+    }
 
   protected:
     void initialize(size_type count)

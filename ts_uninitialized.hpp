@@ -139,6 +139,23 @@ inline void uninitialized_fill_n(ForwardIter first, Size count, const T &val)
     }
 }
 
+// template <typename ForwardIter> inline void uninitialized_break(ForwardIter first, ForwardIter last) noexcept
+// {
+//     for (; first != last; ++first)
+//     {
+//         destroy(&*first);
+//     }
+// }
+
+// template <typename ForwardIter, typename Size> inline void uninitialized_break_n(ForwardIter first, Size count)
+// noexcept
+// {
+//     for (ForwardIter last = first + count; first != last; ++first)
+//     {
+//         destroy(&*first);
+//     }
+// }
+
 } // namespace TS
 
 #endif

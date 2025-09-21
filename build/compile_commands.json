@@ -1,0 +1,8 @@
+[
+{
+  "directory": "/home/danking/src/code/TinySTL2/build",
+  "command": "/usr/bin/g++   -g -o CMakeFiles/TinySTL.dir/Test/test.cpp.o -c /home/danking/src/code/TinySTL2/Test/test.cpp",
+  "file": "/home/danking/src/code/TinySTL2/Test/test.cpp",
+  "output": "CMakeFiles/TinySTL.dir/Test/test.cpp.o"
+}
+]
