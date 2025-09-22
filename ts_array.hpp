@@ -32,19 +32,10 @@ template <typename T, std::size_t N> class array
     using self = array<T, N>;
 
   public:
+    ~array() = default;
+
     array() : _data{}
     {
-    }
-
-    array(std::initializer_list<T> init)
-    {
-        if (init.size() > N)
-        {
-            throw std::out_of_range("Too many elements in initializer list");
-        }
-
-        uninitialized_copy_n(init.begin(), init.size(), _data);
-        uninitialized_fill_n(_data + init.size(), N - init.size(), T());
     }
 
     array(const self &other)
@@ -60,7 +51,16 @@ template <typename T, std::size_t N> class array
         }
     }
 
-    ~array() = default;
+    array(std::initializer_list<T> init)
+    {
+        if (init.size() > N)
+        {
+            throw std::out_of_range("Too many elements in initializer list");
+        }
+
+        uninitialized_copy_n(init.begin(), init.size(), _data);
+        uninitialized_fill_n(_data + init.size(), N - init.size(), T());
+    }
 
     self &operator=(const self &other)
     {
