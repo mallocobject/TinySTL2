@@ -129,29 +129,29 @@ TinySTL/fast:
 	$(MAKE) $(MAKESILENT) -f CMakeFiles/TinySTL.dir/build.make CMakeFiles/TinySTL.dir/build
 .PHONY : TinySTL/fast
 
-Test/array_test.o: Test/array_test.cpp.o
-.PHONY : Test/array_test.o
+Test/vector_test.o: Test/vector_test.cpp.o
+.PHONY : Test/vector_test.o
 
 # target to build an object file
-Test/array_test.cpp.o:
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/TinySTL.dir/build.make CMakeFiles/TinySTL.dir/Test/array_test.cpp.o
-.PHONY : Test/array_test.cpp.o
+Test/vector_test.cpp.o:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/TinySTL.dir/build.make CMakeFiles/TinySTL.dir/Test/vector_test.cpp.o
+.PHONY : Test/vector_test.cpp.o
 
-Test/array_test.i: Test/array_test.cpp.i
-.PHONY : Test/array_test.i
+Test/vector_test.i: Test/vector_test.cpp.i
+.PHONY : Test/vector_test.i
 
 # target to preprocess a source file
-Test/array_test.cpp.i:
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/TinySTL.dir/build.make CMakeFiles/TinySTL.dir/Test/array_test.cpp.i
-.PHONY : Test/array_test.cpp.i
+Test/vector_test.cpp.i:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/TinySTL.dir/build.make CMakeFiles/TinySTL.dir/Test/vector_test.cpp.i
+.PHONY : Test/vector_test.cpp.i
 
-Test/array_test.s: Test/array_test.cpp.s
-.PHONY : Test/array_test.s
+Test/vector_test.s: Test/vector_test.cpp.s
+.PHONY : Test/vector_test.s
 
 # target to generate assembly for a file
-Test/array_test.cpp.s:
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/TinySTL.dir/build.make CMakeFiles/TinySTL.dir/Test/array_test.cpp.s
-.PHONY : Test/array_test.cpp.s
+Test/vector_test.cpp.s:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/TinySTL.dir/build.make CMakeFiles/TinySTL.dir/Test/vector_test.cpp.s
+.PHONY : Test/vector_test.cpp.s
 
 # Help Target
 help:
@@ -162,9 +162,9 @@ help:
 	@echo "... edit_cache"
 	@echo "... rebuild_cache"
 	@echo "... TinySTL"
-	@echo "... Test/array_test.o"
-	@echo "... Test/array_test.i"
-	@echo "... Test/array_test.s"
+	@echo "... Test/vector_test.o"
+	@echo "... Test/vector_test.i"
+	@echo "... Test/vector_test.s"
 .PHONY : help
 
 

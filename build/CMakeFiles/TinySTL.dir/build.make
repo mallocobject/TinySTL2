@@ -69,28 +69,28 @@ include CMakeFiles/TinySTL.dir/progress.make
 # Include the compile flags for this target's objects.
 include CMakeFiles/TinySTL.dir/flags.make
 
-CMakeFiles/TinySTL.dir/Test/array_test.cpp.o: CMakeFiles/TinySTL.dir/flags.make
-CMakeFiles/TinySTL.dir/Test/array_test.cpp.o: /home/danking/src/code/TinySTL2/Test/array_test.cpp
-CMakeFiles/TinySTL.dir/Test/array_test.cpp.o: CMakeFiles/TinySTL.dir/compiler_depend.ts
-	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green --progress-dir=/home/danking/src/code/TinySTL2/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_1) "Building CXX object CMakeFiles/TinySTL.dir/Test/array_test.cpp.o"
-	/usr/bin/g++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -MD -MT CMakeFiles/TinySTL.dir/Test/array_test.cpp.o -MF CMakeFiles/TinySTL.dir/Test/array_test.cpp.o.d -o CMakeFiles/TinySTL.dir/Test/array_test.cpp.o -c /home/danking/src/code/TinySTL2/Test/array_test.cpp
+CMakeFiles/TinySTL.dir/Test/vector_test.cpp.o: CMakeFiles/TinySTL.dir/flags.make
+CMakeFiles/TinySTL.dir/Test/vector_test.cpp.o: /home/danking/src/code/TinySTL2/Test/vector_test.cpp
+CMakeFiles/TinySTL.dir/Test/vector_test.cpp.o: CMakeFiles/TinySTL.dir/compiler_depend.ts
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green --progress-dir=/home/danking/src/code/TinySTL2/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_1) "Building CXX object CMakeFiles/TinySTL.dir/Test/vector_test.cpp.o"
+	/usr/bin/g++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -MD -MT CMakeFiles/TinySTL.dir/Test/vector_test.cpp.o -MF CMakeFiles/TinySTL.dir/Test/vector_test.cpp.o.d -o CMakeFiles/TinySTL.dir/Test/vector_test.cpp.o -c /home/danking/src/code/TinySTL2/Test/vector_test.cpp
 
-CMakeFiles/TinySTL.dir/Test/array_test.cpp.i: cmake_force
-	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green "Preprocessing CXX source to CMakeFiles/TinySTL.dir/Test/array_test.cpp.i"
-	/usr/bin/g++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -E /home/danking/src/code/TinySTL2/Test/array_test.cpp > CMakeFiles/TinySTL.dir/Test/array_test.cpp.i
+CMakeFiles/TinySTL.dir/Test/vector_test.cpp.i: cmake_force
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green "Preprocessing CXX source to CMakeFiles/TinySTL.dir/Test/vector_test.cpp.i"
+	/usr/bin/g++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -E /home/danking/src/code/TinySTL2/Test/vector_test.cpp > CMakeFiles/TinySTL.dir/Test/vector_test.cpp.i
 
-CMakeFiles/TinySTL.dir/Test/array_test.cpp.s: cmake_force
-	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green "Compiling CXX source to assembly CMakeFiles/TinySTL.dir/Test/array_test.cpp.s"
-	/usr/bin/g++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -S /home/danking/src/code/TinySTL2/Test/array_test.cpp -o CMakeFiles/TinySTL.dir/Test/array_test.cpp.s
+CMakeFiles/TinySTL.dir/Test/vector_test.cpp.s: cmake_force
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green "Compiling CXX source to assembly CMakeFiles/TinySTL.dir/Test/vector_test.cpp.s"
+	/usr/bin/g++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -S /home/danking/src/code/TinySTL2/Test/vector_test.cpp -o CMakeFiles/TinySTL.dir/Test/vector_test.cpp.s
 
 # Object files for target TinySTL
 TinySTL_OBJECTS = \
-"CMakeFiles/TinySTL.dir/Test/array_test.cpp.o"
+"CMakeFiles/TinySTL.dir/Test/vector_test.cpp.o"
 
 # External object files for target TinySTL
 TinySTL_EXTERNAL_OBJECTS =
 
-TinySTL: CMakeFiles/TinySTL.dir/Test/array_test.cpp.o
+TinySTL: CMakeFiles/TinySTL.dir/Test/vector_test.cpp.o
 TinySTL: CMakeFiles/TinySTL.dir/build.make
 TinySTL: CMakeFiles/TinySTL.dir/link.txt
 	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green --bold --progress-dir=/home/danking/src/code/TinySTL2/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_2) "Linking CXX executable TinySTL"
