@@ -57,10 +57,10 @@ RM = /usr/bin/cmake -E rm -f
 EQUALS = =
 
 # The top-level source directory on which CMake was run.
-CMAKE_SOURCE_DIR = /home/danking/src/code/TinySTL2
+CMAKE_SOURCE_DIR = /home/danking/Desktop/TinySTL2
 
 # The top-level build directory on which CMake was run.
-CMAKE_BINARY_DIR = /home/danking/src/code/TinySTL2/build
+CMAKE_BINARY_DIR = /home/danking/Desktop/TinySTL2/build
 
 #=============================================================================
 # Targets provided globally by CMake.
@@ -87,9 +87,9 @@ rebuild_cache/fast: rebuild_cache
 
 # The main all target
 all: cmake_check_build_system
-	$(CMAKE_COMMAND) -E cmake_progress_start /home/danking/src/code/TinySTL2/build/CMakeFiles /home/danking/src/code/TinySTL2/build//CMakeFiles/progress.marks
+	$(CMAKE_COMMAND) -E cmake_progress_start /home/danking/Desktop/TinySTL2/build/CMakeFiles /home/danking/Desktop/TinySTL2/build//CMakeFiles/progress.marks
 	$(MAKE) $(MAKESILENT) -f CMakeFiles/Makefile2 all
-	$(CMAKE_COMMAND) -E cmake_progress_start /home/danking/src/code/TinySTL2/build/CMakeFiles 0
+	$(CMAKE_COMMAND) -E cmake_progress_start /home/danking/Desktop/TinySTL2/build/CMakeFiles 0
 .PHONY : all
 
 # The main clean target
@@ -129,29 +129,29 @@ TinySTL/fast:
 	$(MAKE) $(MAKESILENT) -f CMakeFiles/TinySTL.dir/build.make CMakeFiles/TinySTL.dir/build
 .PHONY : TinySTL/fast
 
-Test/vector_test.o: Test/vector_test.cpp.o
-.PHONY : Test/vector_test.o
+Test/list_test.o: Test/list_test.cpp.o
+.PHONY : Test/list_test.o
 
 # target to build an object file
-Test/vector_test.cpp.o:
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/TinySTL.dir/build.make CMakeFiles/TinySTL.dir/Test/vector_test.cpp.o
-.PHONY : Test/vector_test.cpp.o
+Test/list_test.cpp.o:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/TinySTL.dir/build.make CMakeFiles/TinySTL.dir/Test/list_test.cpp.o
+.PHONY : Test/list_test.cpp.o
 
-Test/vector_test.i: Test/vector_test.cpp.i
-.PHONY : Test/vector_test.i
+Test/list_test.i: Test/list_test.cpp.i
+.PHONY : Test/list_test.i
 
 # target to preprocess a source file
-Test/vector_test.cpp.i:
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/TinySTL.dir/build.make CMakeFiles/TinySTL.dir/Test/vector_test.cpp.i
-.PHONY : Test/vector_test.cpp.i
+Test/list_test.cpp.i:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/TinySTL.dir/build.make CMakeFiles/TinySTL.dir/Test/list_test.cpp.i
+.PHONY : Test/list_test.cpp.i
 
-Test/vector_test.s: Test/vector_test.cpp.s
-.PHONY : Test/vector_test.s
+Test/list_test.s: Test/list_test.cpp.s
+.PHONY : Test/list_test.s
 
 # target to generate assembly for a file
-Test/vector_test.cpp.s:
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/TinySTL.dir/build.make CMakeFiles/TinySTL.dir/Test/vector_test.cpp.s
-.PHONY : Test/vector_test.cpp.s
+Test/list_test.cpp.s:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/TinySTL.dir/build.make CMakeFiles/TinySTL.dir/Test/list_test.cpp.s
+.PHONY : Test/list_test.cpp.s
 
 # Help Target
 help:
@@ -162,9 +162,9 @@ help:
 	@echo "... edit_cache"
 	@echo "... rebuild_cache"
 	@echo "... TinySTL"
-	@echo "... Test/vector_test.o"
-	@echo "... Test/vector_test.i"
-	@echo "... Test/vector_test.s"
+	@echo "... Test/list_test.o"
+	@echo "... Test/list_test.i"
+	@echo "... Test/list_test.s"
 .PHONY : help
 
 

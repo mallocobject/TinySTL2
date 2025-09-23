@@ -1,6 +1,6 @@
 file(REMOVE_RECURSE
-  "CMakeFiles/TinySTL.dir/Test/vector_test.cpp.o"
-  "CMakeFiles/TinySTL.dir/Test/vector_test.cpp.o.d"
+  "CMakeFiles/TinySTL.dir/Test/list_test.cpp.o"
+  "CMakeFiles/TinySTL.dir/Test/list_test.cpp.o.d"
   "TinySTL"
   "TinySTL.pdb"
 )

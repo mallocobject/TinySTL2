@@ -8,7 +8,7 @@ namespace TS
 {
 template <typename Category, typename T, typename Distance = std::ptrdiff_t, typename Pointer = T *,
           typename Reference = T &>
-struct iterator
+struct _iterator
 {
   public:
     using iterator_category = Category;
