@@ -1,3 +1,4 @@
 cmake_minimum_required(VERSION 3.24)
 project(TinySTL)
 add_executable(TinySTL Test/list_test.cpp)
+target_include_directories(TinySTL PRIVATE ${CMAKE_CURRENT_SOURCE_DIR})

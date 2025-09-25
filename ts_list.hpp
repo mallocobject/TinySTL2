@@ -3,8 +3,10 @@
 
 #include "ts_alloc.hpp"
 #include "ts_iterator.hpp"
+#include <cassert>
 #include <cstddef>
 #include <initializer_list>
+#include <limits>
 #include <stdexcept>
 #include <utility>
 
@@ -22,21 +24,19 @@ template <typename T> struct List_node
 
     List_node(const T &data) : _data(data), _prev(nullptr), _next(nullptr)
     {
+        // std::cout << "-------------" << std::endl;
     }
 
-    List_node(const T &data, self *prev, self *next) : _data(data), _prev(prev), _next(next)
+    List_node(T &&data) : _data(std::move(data)), _prev(nullptr), _next(nullptr)
     {
+        // std::cout << "&&&&&&&&&&&&&" << std::endl;
     }
 
-    List_node(T &&data, self *prev, self *next) : _data(std::move(data)), _prev(prev), _next(next)
-    {
-    }
-
-    template <typename... Args>
-    List_node(self *prev, self *next, Args &&...args)
-        : _data(std::forward<Args>(args)...), _prev(prev), _next(next)
-    {
-    }
+    // template <typename... Args>
+    // List_node(Args &&...args) : _data(std::forward<Args>(args)...), _prev(nullptr),
+    // _next(nullptr)
+    // {
+    // }
 
   public:
     List_node *_prev;
@@ -62,7 +62,7 @@ struct List_iterator : public _iterator<bidirectional_iterator_tag, T>
     using Node = List_node<T>;
 
   public:
-    List_iterator() : _node(nullptr)
+    List_iterator() noexcept : _node(nullptr)
     {
     }
 
@@ -110,6 +110,18 @@ struct List_iterator : public _iterator<bidirectional_iterator_tag, T>
         return tmp;
     }
 
+    template <typename OtherRef, typename OtherPtr>
+    bool operator==(const List_iterator<T, OtherRef, OtherPtr> &other) const
+    {
+        return _node == other._node;
+    }
+
+    template <typename OtherRef, typename OtherPtr>
+    bool operator!=(const List_iterator<T, OtherRef, OtherPtr> &other) const
+    {
+        return _node != other._node;
+    }
+
   public:
     Node *_node;
 };
@@ -135,6 +147,7 @@ template <typename T, typename Alloc = malloc_alloc> class list
   public:
     ~list()
     {
+
         clear();
         put_node(_node);
     }
@@ -146,34 +159,94 @@ template <typename T, typename Alloc = malloc_alloc> class list
         _node->_next = _node;
     }
 
-    list(size_type count)
+    list(size_type count) : list()
     {
-        iterator result = _node->_next;
-        while (count)
+        while (count-- > 0)
         {
-            result = insert(result, T());
+            insert(end(), T());
         }
     }
 
-    list(size_type count, const T &val)
+    list(size_type count, const T &val) : list()
     {
-        iterator result = _node->_next;
-        while (count)
+        while (count-- > 0)
         {
-            result = insert(result, val);
+            insert(end(), val);
         }
     }
 
-    list(const self &other)
+    list(const self &other) : list()
     {
+        for (const_iterator it = other.begin(); it != other.end(); ++it)
+        {
+            insert(end(), *it);
+        }
     }
 
-    list(self &&other) noexcept
+    list(self &&other) noexcept : _node(other._node), _size(other._size)
     {
+        other._size = 0;
+        other._node = other.get_node();
+        other._node->_next = other._node;
+        other._node->_prev = other._node;
     }
 
-    list(std::initializer_list<T> init)
+    list(std::initializer_list<T> init) : list()
     {
+        for (auto iter = init.begin(); iter != init.end(); ++iter)
+        {
+            insert(end(), *iter);
+        }
+    }
+
+    list &operator=(const self &other)
+    {
+        if (this == &other)
+        {
+            return *this;
+        }
+        for (const_iterator it = other.begin(); it != other.end(); ++it)
+        {
+            insert(end(), *it);
+        }
+
+        return *this;
+    }
+
+    list &operator=(self &&other) noexcept
+    {
+        if (this == &other)
+        {
+            return *this;
+        }
+        _node = other._node;
+        _size = other._size;
+
+        other._size = 0;
+        other._node = other.get_node();
+        other._node->_next = other._node;
+        other._node->_prev = other._node;
+
+        return *this;
+    }
+
+    list &operator=(std::initializer_list<T> init)
+    {
+        for (auto iter = init.begin(); iter != init.end(); ++iter)
+        {
+            insert(end(), *iter);
+        }
+
+        return *this;
+    }
+
+    void assign(std::initializer_list<T> init)
+    {
+        clear();
+        for (auto iter = init.begin(); iter != init.end(); ++iter)
+        {
+            insert(end(), *iter);
+        }
     }
 
     reference front()
@@ -187,7 +260,7 @@ template <typename T, typename Alloc = malloc_alloc> class list
         {
             throw std::range_error("empty list");
         }
-        return _node->_next;
+        return _node->_next->_data;
     }
 
     reference back()
@@ -201,48 +274,37 @@ template <typename T, typename Alloc = malloc_alloc> class list
         {
             throw std::range_error("empty list");
         }
-        return _node->_prev;
+        return _node->_prev->_data;
     }
 
     iterator begin()
     {
-        return _node->_next;
+        return iterator(_node->_next);
     }
 
     const_iterator begin() const
     {
-        return _node->_next;
+        return const_iterator(_node->_next);
     }
 
     const_iterator cbegin() const noexcept
     {
-        return _node->_next;
+        return const_iterator(_node->_next);
     }
 
     iterator end()
     {
-        return _node;
+        return iterator(_node);
     }
 
     const_iterator end() const
     {
-        return _node;
+        return iterator(_node);
     }
 
     const_iterator cend() const noexcept
     {
-        return _node;
-    }
-
-    iterator insert(const_iterator pos, const T &val)
-    {
-        Node *new_node = get_node();
-        construct(new_node, val, pos._node->_prev, pos._node);
-
-        pos._node->_prev = new_node;
-        new_node->_prev->_next = new_node;
-
-        return iterator(new_node);
+        return const_iterator(_node);
     }
 
     bool empty() const
@@ -250,60 +312,13 @@ template <typename T, typename Alloc = malloc_alloc> class list
         return _node->_next == _node;
     }
 
-    iterator insert(const_iterator pos, T &&val)
+    size_type size() const
     {
-        Node *new_node = get_node();
-        construct(new_node, std::forward<T>(val), pos._node->_prev, pos._node);
-
-        pos._node->_prev = new_node;
-        new_node->_prev->_next = new_node;
-
-        return iterator(new_node);
+        return _size - 1;
     }
-
-    iterator insert(const_iterator pos, size_type count, const T &val)
+    size_type max_size() const
     {
-        iterator result = const_iterator_to_iterator(pos);
-        while (count-- > 0)
-        {
-            result = insert(result, val);
-        }
-
-        return result;
-    }
-
-    // template <typename InputIter>
-    // iterator insert(const_iterator pos, InputIter first, InputIter last)
-    // {
-    //     iterator result = const_iterator_to_iterator(pos);
-    //     for (; first != last; ++first)
-    //     {
-    //         result = insert(result, *first);
-    //     }
-
-    //     return result;
-    // }
-
-    iterator insert(const_iterator pos, std::initializer_list<T> init)
-    {
-        iterator result = const_iterator_to_iterator(pos);
-        for (auto iter = init.begin(); iter != init.end(); ++iter)
-        {
-            result = insert(result, *iter);
-        }
-
-        return result;
-    }
-
-    template <typename... Args> iterator emplace(const_iterator pos, Args &&...args)
-    {
-        Node *new_node = get_node();
-        construct(new_node, pos._node->_prev, pos._node, std::forward<Args>(args)...);
-
-        pos._node->_prev = new_node;
-        new_node->_prev->_next = new_node;
-
-        return iterator(new_node);
+        return std::numeric_limits<size_type>::max() / sizeof(Node);
     }
 
     void clear()
@@ -320,13 +335,225 @@ template <typename T, typename Alloc = malloc_alloc> class list
         _node->_prev = _node;
     }
 
+    iterator insert(const_iterator pos, const T &val)
+    {
+        Node *new_node = get_node();
+        construct(new_node, val);
+        new_node->_prev = pos._node->_prev;
+        new_node->_next = pos._node,
+
+        new_node->_prev->_next = new_node;
+        pos._node->_prev = new_node;
+
+        return iterator(new_node);
+    }
+
+    iterator insert(const_iterator pos, T &&val)
+    {
+        Node *new_node = get_node();
+        construct(new_node, std::move(val));
+        new_node->_prev = pos._node->_prev;
+        new_node->_next = pos._node,
+
+        pos._node->_prev = new_node;
+        new_node->_prev->_next = new_node;
+
+        return iterator(new_node);
+    }
+
+    iterator insert(const_iterator pos, size_type count, const T &val)
+    {
+        iterator result(pos._node->_prev);
+        while (count-- > 0)
+        {
+            insert(pos, val);
+        }
+
+        return iterator(result._node->_next);
+    }
+
+    // template <typename InputIter>
+    // iterator insert(const_iterator pos, InputIter first, InputIter last)
+    // {
+    //     iterator result = const_iterator_to_iterator(pos);
+    //     for (; first != last; ++first)
+    //     {
+    //         result = insert(result, *first);
+    //     }
+
+    //     return result;
+    // }
+
+    iterator insert(const_iterator pos, std::initializer_list<T> init)
+    {
+        iterator result(pos._node->_prev);
+        for (auto iter = init.begin(); iter != init.end(); ++iter)
+        {
+            insert(pos, *iter);
+        }
+
+        return iterator(result._node->_next);
+    }
+
+    template <typename... Args> iterator emplace(const_iterator pos, Args &&...args)
+    {
+        Node *new_node = get_node();
+        construct(new_node, std::forward<Args>(args)...);
+        new_node->_prev = pos._node->_prev;
+        new_node->_next = pos._node,
+
+        pos._node->_prev = new_node;
+        new_node->_prev->_next = new_node;
+
+        return iterator(new_node);
+    }
+
+    iterator erase(iterator pos)
+    {
+        iterator result(pos._node->_next);
+        pos._node->_prev->_next = pos._node->_next;
+        pos._node->_next->_prev = pos._node->_prev;
+
+        destroy(pos._node);
+        put_node(pos._node);
+
+        return result;
+    }
+
+    iterator erase(const_iterator pos)
+    {
+        return erase(static_cast<iterator>(pos));
+    }
+
+    iterator erase(iterator first, iterator last)
+    {
+        iterator result(first._node->_prev);
+        while (first != last)
+        {
+            iterator tmp = first._node->_next;
+            erase(first);
+            first = tmp;
+        }
+
+        return iterator(result._node->_next);
+    }
+
+    iterator erase(const_iterator first, const_iterator last)
+    {
+        return erase(static_cast<iterator>(first), static_cast<iterator>(last));
+    }
+
+    void push_back(const T &val)
+    {
+        insert(end(), val);
+    }
+
+    void push_back(T &&val)
+    {
+        insert(end(), std::move(val));
+    }
+
+    template <typename... Args> void emplace_back(Args &&...args)
+    {
+        iterator result = emplace(end(), std::forward<Args>(args)...);
+    }
+
+    // template <typename... Args> reference emplace_back(Args &&...args)
+    // {
+    //     iterator result = emplace(end(), std::forward<Args>(args)...);
+    //     return result._node->_data;
+    // }
+
+    void pop_back()
+    {
+        if (empty())
+        {
+            throw std::range_error("empty list");
+        }
+
+        erase(--end());
+    }
+
+    void push_front(const T &val)
+    {
+        insert(begin(), val);
+    }
+
+    void push_front(T &&val)
+    {
+        insert(begin(), std::move(val));
+    }
+
+    template <typename... Args> void emplace_front(Args &&...args)
+    {
+        iterator result = emplace(begin(), std::forward<Args>(args)...);
+    }
+
+    // template <typename... Args> reference emplace_front(Args &&...args)
+    // {
+    //     iterator result = emplace(begin(), std::forward<Args>(args)...);
+    //     return result._node->_data;
+    // }
+
+    void pop_front()
+    {
+        if (empty())
+        {
+            throw std::range_error("empty list");
+        }
+
+        erase(begin());
+    }
+
+    void resize(size_type count)
+    {
+        resize(count, T());
+    }
+
+    void resize(size_type count, const value_type &val)
+    {
+        assert(count >= 0);
+        if (count == size())
+        {
+            return;
+        }
+        else if (count < size())
+        {
+            iterator first = begin();
+            while (count-- > 0)
+            {
+                ++first;
+            }
+
+            erase(first, end());
+        }
+        else
+        {
+            insert(end(), count - size(), val);
+        }
+    }
+
+    void swap(self &other)
+    {
+        Node *tmp_node = other._node;
+        size_type tmp_size = other._size;
+
+        other._node = _node;
+        other._size = _size;
+
+        _node = tmp_node;
+        _size = tmp_size;
+    }
+
   protected:
     Node *get_node()
     {
+        _size++;
         return data_allocator::allocate();
     }
     void put_node(Node *p)
     {
+        _size--;
         data_allocator::deallocate(p);
     }
 
@@ -337,6 +564,7 @@ template <typename T, typename Alloc = malloc_alloc> class list
 
   protected:
     Node *_node;
+    size_type _size = 0;
 };
 
 } // namespace TS

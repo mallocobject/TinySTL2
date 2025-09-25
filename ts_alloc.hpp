@@ -8,8 +8,8 @@
 
 namespace TS
 {
-#define THROW_BAD_ALLOC                                                                                                \
-    std::cout << "out of memory" << std::endl;                                                                         \
+#define THROW_BAD_ALLOC                                                                            \
+    std::cout << "out of memory" << std::endl;                                                     \
     throw std::bad_alloc()
 
 template <typename T> inline void construct(T *p)
@@ -24,7 +24,7 @@ template <typename T, typename U> inline void construct(T *p, const U &val)
 
 template <typename T, typename U> inline void construct(T *p, U &&val)
 {
-    new (p) T(std::forward<U>(val));
+    new (p) T(std::move(val));
 }
 
 // template <typename T, typename U> inline void reconstruct(T *p, const U &val)
@@ -46,10 +46,11 @@ template <typename T, typename U> inline void construct(T *p, U &&val)
 //     new (p) T(il);
 // }
 
-template <typename T, typename... Args> inline void construct(T *p, Args &&...args)
-{
-    new (p) T(std::forward<Args>(args)...);
-}
+// template <typename T, typename... Args> inline void construct(T *p, Args &&...args)
+// {
+//     std::cerr << "Constructing at " << p << " with " << sizeof...(args) << " arguments\n";
+//     new (p) T(std::forward<Args>(args)...);
+// }
 
 template <typename T> inline void destroy(T *p)
 {

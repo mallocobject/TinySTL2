@@ -1,4 +1,4 @@
-#include "../ts_array.hpp"
+#include "ts_array.hpp"
 #include <cassert>
 #include <iostream>
 #include <stdexcept>

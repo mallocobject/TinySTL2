@@ -1,4 +1,4 @@
-#include "../ts_vector.hpp"
+#include "ts_vector.hpp"
 #include <algorithm>
 #include <cassert>
 #include <iostream>

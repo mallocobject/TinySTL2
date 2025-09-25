@@ -5,8 +5,8 @@
 #include "ts_uninitialized.hpp"
 #include <cassert>
 #include <cstddef>
-#include <cstdint>
 #include <initializer_list>
+#include <limits>
 #include <stdexcept>
 #include <utility>
 
@@ -263,7 +263,7 @@ template <typename T, typename Alloc = malloc_alloc> class vector
 
     constexpr size_type max_size() const
     {
-        return SIZE_MAX / sizeof(T);
+        return std::numeric_limits<size_type>::max() / sizeof(T);
     }
 
     void reserve(size_type count)
