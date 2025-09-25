@@ -76,9 +76,9 @@ template <int inst> class malloc_alloc_template
         return result;
     }
 
-    static void *reallocate(void *p, std::size_t size)
+    static void *reallocate(void *p, std::size_t new_size)
     {
-        void *result = realloc(p, size);
+        void *result = realloc(p, new_size);
         if (nullptr == result)
         {
             // 暂时如此处理
@@ -175,9 +175,89 @@ template <typename T, class Alloc> class simple_alloc
     }
 };
 
+enum
+{
+    ALIGN = 8
+};
+enum
+{
+    MAX_BYTES = 128
+};
+enum
+{
+    NFREELISTS = 16
+};
+
 template <bool threads, int inst> class deafault_alloc_template
 {
+  public:
+    using pointer = void *;
+    using size_type = std::size_t;
+
+  public:
+    static pointer allocate(size_type n)
+    {
+    }
+
+    static void deallocate(pointer p, size_type n)
+    {
+    }
+
+    static pointer reallocate(pointer p, size_type old_size, size_type new_size);
+
+  protected:
+    static size_type round_up(size_type bytes)
+    {
+        return (bytes + ALIGN - 1) & (~ALIGN - 1);
+    }
+
+    union Obj {
+        Obj *free_list_link;
+        char *client_data;
+    };
+
+    static size_type free_list_index(size_type bytes)
+    {
+        return (bytes + ALIGN - 1) / ALIGN - 1;
+    }
+
+    static pointer refiil(size_type n);
+
+    static char *chunk_alloc(size_type size, int &nobjs);
+
+  protected:
+    static Obj *free_list[]; // 二级指针
+    static char *start_free;
+    static char *end_free;
+    static size_type heap_size;
 };
+
+template <bool threads, int inst>
+typename deafault_alloc_template<threads, inst>::Obj *free_list[NFREELISTS];
+// 初始化为0->nullptr
+
+template <bool threads, int inst>
+inline bool operator==(const deafault_alloc_template<threads, inst> &,
+                       const deafault_alloc_template<threads, inst> &)
+{
+    return true;
+}
+
+template <bool threads, int inst>
+void *deafault_alloc_template<threads, inst>::reallocate(pointer p, size_type old_size,
+                                                         size_type new_size)
+{
+}
+
+template <bool threads, int inst> void *deafault_alloc_template<threads, inst>::refiil(size_type n)
+{
+}
+
+template <bool threads, int inst>
+char *deafault_alloc_template<threads, inst>::chunk_alloc(size_type size, int &nobjs)
+{
+}
+using alloc = deafault_alloc_template<false, 0>;
 
 } // namespace TS
 

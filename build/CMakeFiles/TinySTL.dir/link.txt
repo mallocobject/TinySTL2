@@ -1,1 +1,0 @@
-/usr/bin/g++ -g CMakeFiles/TinySTL.dir/Test/list_test.cpp.o -o TinySTL 
