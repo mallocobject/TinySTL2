@@ -1,8 +1,8 @@
 [
 {
-  "directory": "/home/danking/Desktop/TinySTL2/build",
-  "command": "/usr/bin/g++  -I/home/danking/Desktop/TinySTL2 -g -o CMakeFiles/TinySTL.dir/Test/list_test.cpp.o -c /home/danking/Desktop/TinySTL2/Test/list_test.cpp",
-  "file": "/home/danking/Desktop/TinySTL2/Test/list_test.cpp",
+  "directory": "/home/danking/src/code/TinySTL2/build",
+  "command": "/usr/bin/g++  -I/home/danking/src/code/TinySTL2 -g -o CMakeFiles/TinySTL.dir/Test/list_test.cpp.o -c /home/danking/src/code/TinySTL2/Test/list_test.cpp",
+  "file": "/home/danking/src/code/TinySTL2/Test/list_test.cpp",
   "output": "CMakeFiles/TinySTL.dir/Test/list_test.cpp.o"
 }
 ]

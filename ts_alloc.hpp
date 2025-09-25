@@ -59,6 +59,11 @@ template <typename T> inline void destroy(T *p)
 
 template <int inst> class malloc_alloc_template
 {
+
+  public:
+    using pointer = void *;
+    using size_type = std::size_t;
+
   public:
     static void *allocate(std::size_t size)
     {
@@ -88,10 +93,52 @@ template <int inst> class malloc_alloc_template
     }
 
   protected:
-    // static pointer oom_allocate(size_type n);
-    // static pointer oom_reallocate(pointer p, size_type new_size);
-    // static void oom_deallocate(pointer p);
+    static pointer oom_allocate(size_type n);
+    static pointer oom_reallocate(pointer p, size_type new_size);
+    static void (*malloc_alloc_oom_hander)();
 };
+
+template <int inst> void (*malloc_alloc_template<inst>::malloc_alloc_oom_hander)() = nullptr;
+
+template <int inst> void *malloc_alloc_template<inst>::oom_allocate(std::size_t n)
+{
+    void (*my_malloc_hander)() = nullptr;
+    void *result;
+    while (true)
+    {
+        my_malloc_hander = malloc_alloc_oom_hander;
+        if (nullptr == my_malloc_hander)
+        {
+            oom_allocate(n);
+        }
+        (*my_malloc_hander)();
+        result = malloc(n);
+        if (result)
+        {
+            return result;
+        }
+    }
+}
+
+template <int inst> void *malloc_alloc_template<inst>::oom_reallocate(void *p, std::size_t n)
+{
+    void (*my_malloc_hander)() = nullptr;
+    void *result;
+    while (true)
+    {
+        my_malloc_hander = malloc_alloc_oom_hander;
+        if (nullptr == my_malloc_hander)
+        {
+            oom_reallocate(p, n);
+        }
+        (*my_malloc_hander)();
+        result = realloc(p, n);
+        if (result)
+        {
+            return result;
+        }
+    }
+}
 
 using malloc_alloc = malloc_alloc_template<0>;
 
@@ -126,6 +173,10 @@ template <typename T, class Alloc> class simple_alloc
     {
         Alloc::deallocate(p);
     }
+};
+
+template <bool threads, int inst> class deafault_alloc_template
+{
 };
 
 } // namespace TS
