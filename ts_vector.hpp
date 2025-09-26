@@ -19,7 +19,7 @@ template <typename T, typename Alloc> class vector;
 template <typename T, typename Alloc>
 bool operator==(const vector<T, Alloc> &lhs, const vector<T, Alloc> &rhs);
 
-template <typename T, typename Alloc = malloc_alloc> class vector
+template <typename T, typename Alloc = alloc> class vector
 {
   public:
     using value_type = T;
@@ -280,10 +280,11 @@ template <typename T, typename Alloc = malloc_alloc> class vector
 
         iterator old_first = begin();
         size_type old_count = size();
+        size_type old_capacity = capacity();
         initialize(count);
         _finish = uninitialized_copy_n(old_first, old_count, _start);
         clear(old_first, old_first + old_count);
-        data_allocator::deallocate(&*old_first);
+        data_allocator::deallocate(&*old_first, old_capacity);
     }
 
     void shrink_to_fit()
@@ -291,11 +292,12 @@ template <typename T, typename Alloc = malloc_alloc> class vector
         size_type count = size();
 
         iterator old_first = begin();
+        size_type old_capacity = capacity();
         size_type old_count = size();
         initialize(count);
         _finish = uninitialized_copy_n(old_first, old_count, _start);
         clear(old_first, old_first + old_count);
-        data_allocator::deallocate(&*old_first);
+        data_allocator::deallocate(&*old_first, old_capacity);
     }
 
     // modifier
@@ -388,6 +390,7 @@ template <typename T, typename Alloc = malloc_alloc> class vector
         {
             iterator old_start = _start;
             iterator old_finish = _finish;
+            size_type old_capacity = capacity();
             expand();
 
             iterator new_pos = _start + index;
@@ -396,7 +399,7 @@ template <typename T, typename Alloc = malloc_alloc> class vector
             uninitialized_copy(old_start, const_cast<iterator>(pos), _start);
             _finish = uninitialized_copy(const_cast<iterator>(pos), old_finish, new_pos + 1);
             clear(old_start, old_finish);
-            data_allocator::deallocate(&*old_start);
+            data_allocator::deallocate(&*old_start, old_capacity);
             construct(&*new_pos, std::forward<Args>(args)...);
         }
         else
@@ -569,7 +572,7 @@ template <typename T, typename Alloc = malloc_alloc> class vector
     void zero_capacity()
     {
         clear(_start, _finish);
-        data_allocator::deallocate(&*_start);
+        data_allocator::deallocate(&*_start, capacity());
         _finish = _start;
         _end_of_storage = _start;
     }

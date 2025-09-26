@@ -126,7 +126,7 @@ struct List_iterator : public _iterator<bidirectional_iterator_tag, T>
     Node *_node;
 };
 
-template <typename T, typename Alloc = malloc_alloc> class list
+template <typename T, typename Alloc = alloc> class list
 {
   public:
     using value_type = T;
