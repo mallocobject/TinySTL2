@@ -148,6 +148,11 @@ struct Deque_iterator : public _iterator<random_access_iterator_tag, T>
         return _cur == other._cur;
     }
 
+    bool operator<(const self &other) const
+    {
+        return (_mapp == other._mapp) ? (_cur < other._cur) : (_mapp < other._mapp);
+    }
+
     void set_map(map_pointer new_map)
     {
         _mapp = new_map;
@@ -161,6 +166,32 @@ struct Deque_iterator : public _iterator<random_access_iterator_tag, T>
     pointer _last;
     map_pointer _mapp;
 };
+
+template <typename T, typename Alloc = alloc> class deque
+{
+  public:
+    using value_type = T;
+    using size_type = std::size_t;
+    using difference = std::ptrdiff_t;
+    using reference = value_type &;
+    using const_reference = const value_type &;
+    using pointer = value_type *;
+    using const_pointer = const value_type *;
+    using iterator = Deque_iterator<T, T &, T *>;
+    using const_iterator = Deque_iterator<T, const T &, const T *>;
+
+  protected:
+    using data_allocator = simple_alloc<T, Alloc>;
+    using map_allocator = simple_alloc<T *, Alloc>;
+    using typename iterator::map_pointer;
+
+  protected:
+    map_pointer _map;
+    iterator _start;
+    iterator _finish;
+    size_type _size;
+};
+
 } // namespace TS
 
 #endif
